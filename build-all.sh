@@ -5,7 +5,7 @@ LIBNAMES=("libgmp" "libnettle" "libtasn1" "libgnutls")
 FILENAMEBASES=("gmp" "nettle" "libtasn1" "gnutls" )
 REMOTEURLROOTS=("ftp://ftp.gnu.org/gnu/gmp/" "http://www.lysator.liu.se/~nisse/archive/" "http://ftp.gnu.org/gnu/libtasn1/" "ftp://ftp.gnupg.org/gcrypt/gnutls/v3.4/" )
 COMPRESSIONTYPES=("bz2" "gz" "gz" "xz" )
-LIBVERSIONS=("6.1.0" "3.2" "3.3" "3.4.9" )
+LIBVERSIONS=("6.1.0" "3.2" "4.7" "3.4.9" )
 LIBFLAGSLIST=("--disable-assembly" "--disable-assembler --disable-arm-neon" "" "--without-p11-kit")
 C_STD=""
 CPP_STD=""
@@ -21,7 +21,7 @@ mkdir -p $CURRENTPATH
 
 for (( i = 0 ; i < ${#LIBNAMES[@]} ; i++ ))
 do
-	[ -e "${OGLIB}/${LIBNAMES[i]}.a" ] && continue
+	[ -e "${OGLIB}/${LIBNAMES[i]}.dylib" ] && continue
 	echo "🚧  🚧  🚧  🚧  🚧  🚧  🚧  🚧  🚧  🚧  🚧  🚧  "
 	echo "🎯  Building target ${LIBNAMES[i]}"
 	LIBNAME=${LIBNAMES[i]}

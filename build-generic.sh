@@ -1,5 +1,5 @@
 #!/bin/bash
-#set -x #echo on
+set -x #echo on
 
 
 #=================================================================================
@@ -7,7 +7,7 @@
 # You can change values here
 #=================================================================================
 # Architectures array
-ARCHS=("arm64" "i386" "armv7" "armv7s" "x86_64")
+ARCHS=("x86_64" "arm64" "i386" "armv7" "armv7s")
 # ARCHS=("arm64")
 
 # Platforms array
@@ -25,7 +25,7 @@ mkdir -p $OGINCLUDE
 mkdir -p $OGLIB
 mkdir -p $CURRENTPATH
 
-mkdir -p "${CURRENTPATH}/build"
+#mkdir -p "${CURRENTPATH}/build"
 mkdir -p "${CURRENTPATH}/include"
 mkdir -p "${CURRENTPATH}/lib"
 mkdir -p "${CURRENTPATH}/src"
@@ -46,6 +46,7 @@ tar zxf $FILENAME -C ${CURRENTPATH}/src/
 
 PLATFORMREGEX="^arm"
 LIPO="lipo -create"
+LIPO2="lipo -create"
 echo "  🚨  Beginning to build all for ${LIBNAME}"
 echo "  🏛  Architectures: ${ARCHS[@]}"
 for ARCH in "${ARCHS[@]}"
@@ -99,28 +100,27 @@ do
 
 	export LDFLAGS="$COMMONFLAGS -L${CURRENTPATH}/lib -L${SDKROOT}/usr/lib"
 
-	export CCASFLAGS="$COMMONFLAGS -I${CURRENTPATH}/include -I${SDKROOT}/usr/include"
-	export CFLAGS="$COMMONFLAGS $C_STD -I${CURRENTPATH}/include -I${SDKROOT}/usr/include"
-	export CXXFLAGS="$COMMONFLAGS $CPP_STD -I${CURRENTPATH}/include -I${SDKROOT}/usr/include"
+	export CCASFLAGS="$COMMONFLAGS -I${OUTPUTPATH}/include -I${SDKROOT}/usr/include"
+	export CFLAGS="$COMMONFLAGS $C_STD -I${OUTPUTPATH}/include -I${SDKROOT}/usr/include"
+	export CXXFLAGS="$COMMONFLAGS $CPP_STD -I${OUTPUTPATH}/include -I${SDKROOT}/usr/include"
 	export M4FLAGS="-I${PREFIX}/include -I${SDKROOT}/usr/include"
 
-	export CPPFLAGS="$COMMONFLAGS $CPP_STD -I${CURRENTPATH}/include -I${SDKROOT}/usr/include"
+	export CPPFLAGS="$COMMONFLAGS $CPP_STD -I${OUTPUTPATH}/include -I${SDKROOT}/usr/include"
 
 	cd ${CURRENTPATH}/src/$FILENAMEBASE*
 	make clean
 	make distclean
 
-	mkdir -p "${CURRENTPATH}/build/${ARCH}"
-	cd ${CURRENTPATH}/build/${ARCH}
-
 	echo "    ⚙  Configure..."
 	echo "      📥  OUTPUTPATH: ${OUTPUTPATH}"
-	${CURRENTPATH}/src/$FILENAMEBASE*/configure --prefix=${PREFIX} --host=arm-apple-darwin --disable-static  $LIBFLAGS
-	
+	./configure --prefix=${PREFIX} --host=arm-apple-darwin --disable-static --with-included-libtasn1 $LIBFLAGS
+
 	echo "    🛠  Build..."
 
 	LIPO="${LIPO} ${OUTPUTPATH}/lib/${LIBNAME}.dylib"
-	
+	if [ $LIBNAME == "libnettle" ]; then
+		LIPO2="${LIPO2} ${OUTPUTPATH}/lib/libhogweed.dylib"	
+	fi
 	make -j16
 	make install
 	make clean
@@ -131,9 +131,18 @@ cd ${CURRENTPATH}
 echo "  🍔  📚   Creating fat library..."
 FATNAME="${CURRENTPATH}/lib/${LIBNAME}.dylib"
 LIPO="${LIPO} -output $FATNAME"
-cp $FATNAME $OGLIB
 echo "  👾  lipo command:  $LIPO"
 $LIPO
+
+if [ $LIBNAME == "libnettle" ]; then
+	FATNAME2="${CURRENTPATH}/lib/libhogweed.dylib"
+	LIPO2="${LIPO2} -output $FATNAME2"
+	echo "  👾  hogweed lipo command:  $LIPO2"
+	$LIPO2
+	cp $FATNAME2 $OGLIB
+fi
+
+cp $FATNAME $OGLIB
 
 echo "  🚚  Copying headers..."
 COPYHEADERS="cp -r ${OUTPUTPATH}/include/* $OGINCLUDE"
