@@ -118,8 +118,8 @@ do
 	echo "    🛠  Build..."
 
 	LIPO="${LIPO} ${OUTPUTPATH}/lib/${LIBNAME}.dylib"
-	if [ $LIBNAME == "libnettle" ]; then
-		LIPO2="${LIPO2} ${OUTPUTPATH}/lib/libhogweed.dylib"	
+	if [ $SECONDARYLIB != "" ]; then
+		LIPO2="${LIPO2} ${OUTPUTPATH}/lib/${SECONDARYLIB}.dylib"	
 	fi
 	make -j16
 	make install
@@ -134,10 +134,10 @@ LIPO="${LIPO} -output $FATNAME"
 echo "  👾  lipo command:  $LIPO"
 $LIPO
 
-if [ $LIBNAME == "libnettle" ]; then
-	FATNAME2="${CURRENTPATH}/lib/libhogweed.dylib"
+if [ $SECONDARYLIB != "" ]; then
+	FATNAME2="${CURRENTPATH}/lib/${SECONDARYLIB}.dylib"
 	LIPO2="${LIPO2} -output $FATNAME2"
-	echo "  👾  hogweed lipo command:  $LIPO2"
+	echo "  👾  ${SECONDARYLIB} lipo command:  $LIPO2"
 	$LIPO2
 	cp $FATNAME2 $OGLIB
 fi

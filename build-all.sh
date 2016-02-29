@@ -7,6 +7,7 @@ REMOTEURLROOTS=("ftp://ftp.gnu.org/gnu/gmp/" "http://www.lysator.liu.se/~nisse/a
 COMPRESSIONTYPES=("bz2" "gz" "gz" "xz" )
 LIBVERSIONS=("6.1.0" "3.2" "4.7" "3.4.9" )
 LIBFLAGSLIST=("--disable-assembly" "--disable-assembler --disable-arm-neon" "" "--without-p11-kit")
+SECONDARYLIBS=("" "libhogweed" "" "libgnutlsxx")
 C_STD=""
 CPP_STD=""
 
@@ -24,6 +25,7 @@ do
 	[ -e "${OGLIB}/${LIBNAMES[i]}.dylib" ] && continue
 	echo "🚧  🚧  🚧  🚧  🚧  🚧  🚧  🚧  🚧  🚧  🚧  🚧  "
 	echo "🎯  Building target ${LIBNAMES[i]}"
+	SECONDARYLIB=${SECONDARYLIBS[i]}
 	LIBNAME=${LIBNAMES[i]}
 	FILENAMEBASE=${FILENAMEBASES[i]}
 	REMOTEURLROOT=${REMOTEURLROOTS[i]}
