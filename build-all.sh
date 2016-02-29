@@ -1,12 +1,12 @@
 #!/bin/bash
 
 # Library name, version and location
-LIBNAMES=("libgmp" "libnettle" "libtasn1" "libgnutls")
-FILENAMEBASES=("gmp" "nettle" "libtasn1" "gnutls" )
-REMOTEURLROOTS=("ftp://ftp.gnu.org/gnu/gmp/" "http://www.lysator.liu.se/~nisse/archive/" "http://ftp.gnu.org/gnu/libtasn1/" "ftp://ftp.gnupg.org/gcrypt/gnutls/v3.4/" )
-COMPRESSIONTYPES=("bz2" "gz" "gz" "xz" )
-LIBVERSIONS=("6.1.0" "3.2" "4.7" "3.4.9" )
-LIBFLAGSLIST=("--disable-assembly" "--disable-assembler --disable-arm-neon" "" "--without-p11-kit")
+LIBNAMES=("libgmp" "libnettle" "libtasn1" "libgnutls" "libmsgpackc")
+FILENAMEBASES=("gmp" "nettle" "libtasn1" "gnutls" "msgpack-c-master")
+REMOTEURLROOTS=("ftp://ftp.gnu.org/gnu/gmp/" "http://www.lysator.liu.se/~nisse/archive/" "http://ftp.gnu.org/gnu/libtasn1/" "ftp://ftp.gnupg.org/gcrypt/gnutls/v3.4/" "https://github.com/msgpack/msgpack-c/archive/master.zip")
+COMPRESSIONTYPES=("bz2" "gz" "gz" "xz" "github")
+LIBVERSIONS=("6.1.0" "3.2" "4.7" "3.4.9" "current")
+LIBFLAGSLIST=("--disable-assembly" "--disable-assembler --disable-arm-neon" "" "--without-p11-kit" "")
 SECONDARYLIBS=("" "libhogweed" "" "libgnutlsxx")
 C_STD=""
 CPP_STD=""

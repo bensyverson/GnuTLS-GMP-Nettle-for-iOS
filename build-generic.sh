@@ -33,16 +33,29 @@ mkdir -p "${CURRENTPATH}/tar"
 mkdir -p "${CURRENTPATH}/usr"
 cd "${CURRENTPATH}/tar"
 
-FILENAME="${FILENAMEBASE}-${LIBVERSION}.tar.${COMPRESSIONTYPE}"
-if [ ! -e $FILENAME ]; then
-        echo "  📞  Downloading ${FILENAME}"
-        REMOTEFILE="${REMOTEURLROOT}${FILENAME}"
-        curl -O $REMOTEFILE
-else
-        echo "  📦  Using ${FILENAME}"
+if [ $COMPRESSIONTYPE == "github" ]; then
+	if [ ! -e "master.zip" ]; then
+	        echo "  📞  Downloading ${REMOTEURLROOT} from Github."
+	        curl -O -L $REMOTEURLROOT
+	else
+	        echo "  📦  Using existing master.zip"
+	fi
+
+	echo "    📦 Extracting files..."
+	unzip -o master.zip -d ${CURRENTPATH}/src/
+else 
+	FILENAME="${FILENAMEBASE}-${LIBVERSION}.tar.${COMPRESSIONTYPE}"
+	if [ ! -e $FILENAME ]; then
+	        echo "  📞  Downloading ${FILENAME}"
+	        REMOTEFILE="${REMOTEURLROOT}${FILENAME}"
+	        curl -O -L $REMOTEFILE
+	else
+	        echo "  📦  Using ${FILENAME}"
+	fi
+
+	echo "    📦 Extracting files..."
+	tar zxf $FILENAME -C ${CURRENTPATH}/src/
 fi
-echo "    📦 Extracting files..."
-tar zxf $FILENAME -C ${CURRENTPATH}/src/
 
 PLATFORMREGEX="^arm"
 LIPO="lipo -create"
@@ -113,6 +126,10 @@ do
 
 	echo "    ⚙  Configure..."
 	echo "      📥  OUTPUTPATH: ${OUTPUTPATH}"
+
+	if [ $LIBNAME == "libmsgpack" ]; then
+		./bootstrap
+	fi
 	./configure --prefix=${PREFIX} --host=arm-apple-darwin --disable-static --with-included-libtasn1 $LIBFLAGS
 
 	echo "    🛠  Build..."
